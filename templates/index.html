@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Bubble Screensaver</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bubbles.css') }}">
+  <style>
+    /* or use an external CSS file in static/bubbles.css */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bubbleCanvas"></canvas>
+
+  <script>
+  // Very simple bubble animation
+  const canvas = document.getElementById('bubbleCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let w, h;
+  let bubbles = [];
+
+  function init() {
+    resizeCanvas();
+    createBubbles(30); // number of bubbles
+    animate();
+    checkInboundCall(); // start poll
+  }
+
+  function resizeCanvas() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+  }
+
+  function createBubbles(num) {
+    for (let i = 0; i < num; i++) {
+      bubbles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 20 + 5,
+        dx: (Math.random() - 0.5) * 2,
+        dy: (Math.random() - 0.5) * 2
+      });
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    for (let b of bubbles) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 150, 255, 0.4)';
+      ctx.fill();
+
+      // Move
+      b.x += b.dx;
+      b.y += b.dy;
+
+      // Bounce off edges
+      if (b.x < 0 || b.x > w) b.dx *= -1;
+      if (b.y < 0 || b.y > h) b.dy *= -1;
+    }
+    requestAnimationFrame(animate);
+  }
+
+  function checkInboundCall() {
+    fetch('/status')
+      .then(res => res.json())
+      .then(data => {
+        if (data.inbound_call) {
+          // If inbound call is detected, navigate to call incoming screen
+          window.location.href = "/call_incoming";
+        } else {
+          // Otherwise check again in 5 seconds
+          setTimeout(checkInboundCall, 5000);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setTimeout(checkInboundCall, 5000);
+      });
+  }
+
+  window.addEventListener('resize', resizeCanvas, false);
+  window.addEventListener('load', init, false);
+  </script>
+</body>
+</html>

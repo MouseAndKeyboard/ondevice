@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Call Incoming</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Incoming Call...</h1>
+    <p>Stand by.</p>
+  </div>
+
+  <script>
+  // If you want to revert back to bubbles if the call ends, you can poll:
+  function checkCallStatus() {
+    fetch('/status')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.inbound_call) {
+          // No call, revert
+          window.location.href = "/";
+        } else {
+          setTimeout(checkCallStatus, 5000);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setTimeout(checkCallStatus, 5000);
+      });
+  }
+
+  checkCallStatus();
+  </script>
+</body>
+</html>
