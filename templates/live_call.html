@@ -44,6 +44,20 @@
 
     // when you click “Leave” we go back to the kiosk home
     call.on('left-meeting', () => window.location.href = "/");
+    
+    // when another participant leaves
+    call.on('participant-left', (event) => {
+      // Check if there are no other participants left (excluding local participant)
+      call.participants().then(participants => {
+        // Get count of remote participants (excluding local)
+        const remoteParticipants = Object.values(participants).filter(p => !p.local);
+        if (remoteParticipants.length === 0) {
+          // If no remote participants left, leave the call and go home
+          call.leave();
+          window.location.href = "/";
+        }
+      });
+    });
   </script>
 </body>
 </html>

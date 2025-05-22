@@ -30,24 +30,31 @@
   </div>
 
   <script>
-  // If you want to revert back to bubbles if the call ends, you can poll:
+  // Redirect to live call after 3 seconds
+  setTimeout(() => {
+    window.location.href = "/live_call";
+  }, 3000);
+
+  // Check if call is still active
   function checkCallStatus() {
     fetch('/status')
       .then(res => res.json())
       .then(data => {
         if (!data.inbound_call) {
-          // No call, revert
+          // No call, revert to home
           window.location.href = "/";
         } else {
+          // Continue checking
           setTimeout(checkCallStatus, 5000);
         }
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error checking call status:', err);
         setTimeout(checkCallStatus, 5000);
       });
   }
 
+  // Start checking call status
   checkCallStatus();
   </script>
 </body>
