@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Live Call</title>
+  <style>
+    /* make sure html/body fill the screen and have no scrollbars */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    /* the container into which we’ll render Daily’s iframe */
+    #callFrame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- this div will become the full-screen call -->
+  <div id="callFrame"></div>
+
+  <script src="https://unpkg.com/@daily-co/daily-js"></script>
+  <script>
+    const DAILY_URL = "https://affinitycube.daily.co/conference_demo";
+    // grab our container
+    const container = document.getElementById('callFrame');
+
+    // tell Daily to render into that container
+    const call = window.DailyIframe.createFrame(container, {
+      showLeaveButton: true
+    });
+
+    // join the room
+    call.join({ url: DAILY_URL });
+
+    // when you click “Leave” we go back to the kiosk home
+    call.on('left-meeting', () => window.location.href = "/");
+  </script>
+</body>
+</html>
